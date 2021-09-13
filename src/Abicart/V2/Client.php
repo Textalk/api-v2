@@ -27,6 +27,7 @@ class Client
         'logger'          => null,
         'base_uri'        => 'https://api.abicart.com/v2/',
         'allow_redirects' => false,
+        'parse_result'    => false,
     ];
 
     private $config;
@@ -51,8 +52,7 @@ class Client
         $response = $client->get("{$resource}{$params}", [
             'query' => $query,
         ]);
-        $content = $response->getBody()->__toString();
-        return json_decode($content);
+        return $this->result($response);
     }
 
     public function post(string $resource, object $body): string
@@ -61,7 +61,7 @@ class Client
         $response = $client->post("{$resource}", [
             'body' => json_encode($body),
         ]);
-        return $response->getHeaderLine('Location');
+        return $this->result($response);
     }
 
     public function put(string $resource, object $body): string
@@ -70,14 +70,32 @@ class Client
         $response = $client->put("{$resource}", [
             'body' => json_encode($body),
         ]);
-        return $response->getHeaderLine('Location');
+        return $this->result($response);
     }
 
     public function delete(string $resource): bool
     {
         $client = $this->getClient();
         $response = $client->delete("{$resource}");
-        return true;
+        return $this->result($response);
+    }
+
+    public function parse(ResponseInterface $response)
+    {
+        switch ($response->getStatusCode()) {
+            case 200:
+                return json_decode($response->getBody()->__toString());
+            case 201:
+            case 204:
+                return true;
+            case 404:
+                return null;
+        }
+    }
+
+    private function result(ResponseInterface $response)
+    {
+        return $this->config['parse_result'] ? $response : $this->parse($response);
     }
 
     // Set up Guzzle client with middleware
