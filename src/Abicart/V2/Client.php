@@ -46,7 +46,7 @@ class Client
         );
     }
 
-    public function get(string $resource, array $query = []): ?object
+    public function get(string $resource, array $query = [])
     {
         $client = $this->getClient();
         $response = $client->get("{$resource}{$params}", [
@@ -55,7 +55,7 @@ class Client
         return $this->result($response);
     }
 
-    public function post(string $resource, object $body): string
+    public function post(string $resource, $body)
     {
         $client = $this->getClient();
         $response = $client->post("{$resource}", [
@@ -64,7 +64,7 @@ class Client
         return $this->result($response);
     }
 
-    public function put(string $resource, object $body): string
+    public function put(string $resource, $body)
     {
         $client = $this->getClient();
         $response = $client->put("{$resource}", [
@@ -73,7 +73,7 @@ class Client
         return $this->result($response);
     }
 
-    public function delete(string $resource): bool
+    public function delete(string $resource)
     {
         $client = $this->getClient();
         $response = $client->delete("{$resource}");
