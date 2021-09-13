@@ -95,7 +95,7 @@ class Client
 
     private function result(ResponseInterface $response)
     {
-        return $this->config['parse_result'] ? $response : $this->parse($response);
+        return $this->config['parse_result'] ? $this->parse($response) : $response;
     }
 
     // Set up Guzzle client with middleware
