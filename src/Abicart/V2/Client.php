@@ -35,7 +35,8 @@ class Client
     private $authorization;
 
     /**
-     * Create client.
+     * Create client
+     * @param array $config Configuration options
      */
     public function __construct(array $config = [])
     {
@@ -46,6 +47,15 @@ class Client
         );
     }
 
+
+    /* ------------- Public interface methods ---------------------------------------- */
+
+    /**
+     * Get method for reading
+     * @param string $resource The resouce to read
+     * @param array|object $query List of query params
+     * @return ResponseInterface|object|null
+     */
     public function get(string $resource, array $query = [])
     {
         $client = $this->getClient();
@@ -55,6 +65,12 @@ class Client
         return $this->result($response);
     }
 
+    /**
+     * Post method for creation
+     * @param string $resource The resouce to create
+     * @param array|object $body Data to store
+     * @return ResponseInterface|bool
+     */
     public function post(string $resource, $body)
     {
         $client = $this->getClient();
@@ -64,6 +80,12 @@ class Client
         return $this->result($response);
     }
 
+    /**
+     * Put method for updating
+     * @param string $resource The resouce to update
+     * @param array|object $body Data to store
+     * @return ResponseInterface|bool
+     */
     public function put(string $resource, $body)
     {
         $client = $this->getClient();
@@ -73,6 +95,11 @@ class Client
         return $this->result($response);
     }
 
+    /**
+     * Delete method for deleting
+     * @param string $resource The resouce to delete
+     * @return ResponseInterface|bool
+     */
     public function delete(string $resource)
     {
         $client = $this->getClient();
@@ -80,6 +107,11 @@ class Client
         return $this->result($response);
     }
 
+    /**
+     * Parse helper, converts result into object, boolean or null
+     * @param ResponseInterface $response Response to parse
+     * @return object|bool|null
+     */
     public function parse(ResponseInterface $response)
     {
         switch ($response->getStatusCode()) {
@@ -89,10 +121,15 @@ class Client
             case 204:
                 return true;
             case 404:
+            default:
                 return null;
         }
     }
 
+
+    /* ------------- Private helper methods ------------------------------------------ */
+
+    // Return result helper
     private function result(ResponseInterface $response)
     {
         return $this->config['parse_result'] ? $this->parse($response) : $response;
